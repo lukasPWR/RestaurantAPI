@@ -37,6 +37,13 @@ namespace RestaurantAPI.Controllers
 
            return NotFound();
         }
+
+        [HttpDelete("DeleteByName/{name}")]
+        public ActionResult DeleteOnName([FromRoute] string name)
+        {
+            _restaurantService.DeleteOnName(name);
+            return NotFound();
+        }
         [HttpGet]
         public ActionResult<IEnumerable<RestaurantDto>> GetAll()
         {

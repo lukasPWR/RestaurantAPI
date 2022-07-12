@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace RestaurantAPI.Middleware
 {
-    public class RequestTimeMiddleware : IMiddleware
+    public class RequestTimeMiddleware: IMiddleware
     {
         private readonly ILogger<RequestTimeMiddleware> _logger;
-        private readonly Stopwatch _stopwatch;
+        private Stopwatch _stopwatch;
+
         public RequestTimeMiddleware(ILogger<RequestTimeMiddleware> logger)
         {
             _logger = logger;
@@ -23,13 +24,15 @@ namespace RestaurantAPI.Middleware
             await next.Invoke(context);
             _stopwatch.Stop();
 
-           var elapsedMiliseconds =_stopwatch.ElapsedMilliseconds;
+           var elapsedMiliseconds = _stopwatch.ElapsedMilliseconds;
+
            if (elapsedMiliseconds / 1000 > 4)
            {
-               var messege =
+               var message =
                    $"Request [{context.Request.Method}] at {context.Request.Path} took {elapsedMiliseconds} ms";
-               _logger.LogInformation(messege);
-           }
+
+               _logger.LogInformation(message); 
+            }
         }
     }
 }

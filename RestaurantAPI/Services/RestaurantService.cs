@@ -18,6 +18,7 @@ namespace RestaurantAPI.Services
         public IEnumerable<RestaurantDto> GetAll();
         public int Create(CreateRestaurantDto dto);
         public void Delete(int id);
+        public void DeleteOnName(string name);
         public void Update(UpdateRestaurantDto dto, int id);
 
 
@@ -64,6 +65,17 @@ namespace RestaurantAPI.Services
             _dbContext.SaveChanges();
 
             
+        }
+
+        public void DeleteOnName(string name)
+        {
+            var restaurant = _dbContext.Restaurants.FirstOrDefault(r => r.Name == name);
+
+            if (restaurant is null)
+                throw new NotFoundExceptions("Restaurant not found"); ;
+
+            _dbContext.Restaurants.Remove(restaurant);
+            _dbContext.SaveChanges();
         }
         public RestaurantDto GetById(int id)
         {
