@@ -57,9 +57,12 @@ namespace RestaurantAPI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)), // generowanie prywatnego klucza
                 };
             });
-                
-              
-            
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("HasNationality", builder => builder.RequireClaim("Nationality", "German", "Polish"));
+            });
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<RestaurantDbContext>();
             services.AddScoped<RestaurantSeeder>();
@@ -97,6 +100,7 @@ namespace RestaurantAPI
             });
 
             app.UseRouting();
+            app.UseAuthorization();
 
 
             app.UseEndpoints(endpoints =>
