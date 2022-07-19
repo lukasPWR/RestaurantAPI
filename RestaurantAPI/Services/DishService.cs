@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using RestaurantAPI.Authorization;
 using RestaurantAPI.Entities;
 using RestaurantAPI.Exceptions;
 using RestaurantAPI.Models;
@@ -25,10 +27,14 @@ namespace RestaurantAPI.Services
     {
         private readonly RestaurantDbContext _context;
         private readonly IMapper _mapper;
-        public DishService(RestaurantDbContext context, IMapper mapper)
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
+        public DishService(RestaurantDbContext context, IMapper mapper, IAuthorizationService authorizationService, IUserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
+            _authorizationService = authorizationService;
+            _userContextService = userContextService;
         }
 
         public DishDto GetById(int restaurantId, int dishId)
@@ -60,6 +66,14 @@ namespace RestaurantAPI.Services
                 throw new NotFoundExceptions("Dish not found");
             }
 
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, dish,
+                new DishOperationRequirment(DishOperation.Delete)).Result;
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ForbidException();
+            }
+
             _context.Dishes.RemoveRange(dish);
             _context.SaveChanges();
 
@@ -86,7 +100,7 @@ namespace RestaurantAPI.Services
                 throw new NotFoundExceptions("Restaurant not found");
 
             var dishEntity = _mapper.Map<Dish>(dto);
-
+            dishEntity.CreatedById = _userContextService.GetUserId;
             dishEntity.RestaurantId = restaurantId;
             _context.Dishes.Add(dishEntity);
             _context.SaveChanges();

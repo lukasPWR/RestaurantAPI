@@ -67,9 +67,12 @@ namespace RestaurantAPI
                 options.AddPolicy("Atleast20", builder => builder.AddRequirements(new MinimumAgeRequirment(20)));
                 options.AddPolicy("Atleast2RestaurantsCreated",
                     builder => builder.AddRequirements(new MinimumRestaurantsRequirment(2)));
+                options.AddPolicy("Atleast2Dishes", builder => builder.AddRequirements(new MinimumDishesRequirment(1)));
 
             });
 
+            services.AddScoped<IAuthorizationHandler, MinimumDishesRequirmentHandler>();
+            services.AddScoped<IAuthorizationHandler,DishOperationRequirmentHandler>();
             services.AddScoped<IAuthorizationHandler, MinimumRestaurantsRequirmentHandler>();
             services.AddScoped<IAuthorizationHandler, MinimumAgeRequirmentHandler>();
             services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
