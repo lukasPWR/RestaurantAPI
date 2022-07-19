@@ -71,6 +71,7 @@ namespace RestaurantAPI
 
             });
 
+            services.AddScoped < IValidator<RestaurantQuery>, RestaurantQueryValidator>();
             services.AddScoped<IAuthorizationHandler, MinimumDishesRequirmentHandler>();
             services.AddScoped<IAuthorizationHandler,DishOperationRequirmentHandler>();
             services.AddScoped<IAuthorizationHandler, MinimumRestaurantsRequirmentHandler>();

@@ -48,10 +48,10 @@ namespace RestaurantAPI.Controllers
             return NotFound();
         }
         [HttpGet]
-        [Authorize(Policy = "Atleast2Dishes")]
-        public ActionResult<IEnumerable<RestaurantDto>> GetAll()
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
         {
-            var restaurantsDtos = _restaurantService.GetAll();
+            var restaurantsDtos = _restaurantService.GetAll(query);
 
             return Ok(restaurantsDtos);
         }
