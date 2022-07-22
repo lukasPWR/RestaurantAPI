@@ -37,9 +37,9 @@ namespace RestaurantAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<DishDto>> GetAll([FromRoute] int restaurantId)
+        public ActionResult<List<DishDto>> GetAll([FromRoute] int restaurantId, [FromQuery] DishQuery query)
         {
-            var dishes = _dishService.GetAll(restaurantId);
+            var dishes = _dishService.GetAll(restaurantId, query);
             return Ok(dishes);
         }
 

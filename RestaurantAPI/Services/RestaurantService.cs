@@ -138,8 +138,8 @@ namespace RestaurantAPI.Services
                 var selectedColumn = columnsSelector[query.SortBy];
 
                 baseQuery = query.SortDirection == SortDirection.ASC
-                    ? baseQuery.OrderBy(r => r.Name)
-                    : baseQuery.OrderByDescending(r => r.Category);
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
 
             }
 

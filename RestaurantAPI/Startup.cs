@@ -70,7 +70,7 @@ namespace RestaurantAPI
                 options.AddPolicy("Atleast2Dishes", builder => builder.AddRequirements(new MinimumDishesRequirment(1)));
 
             });
-
+            services.AddScoped<IValidator<DishQuery>, DishQueryValidator>();
             services.AddScoped < IValidator<RestaurantQuery>, RestaurantQueryValidator>();
             services.AddScoped<IAuthorizationHandler, MinimumDishesRequirmentHandler>();
             services.AddScoped<IAuthorizationHandler,DishOperationRequirmentHandler>();

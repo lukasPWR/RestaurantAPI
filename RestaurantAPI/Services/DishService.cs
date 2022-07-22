@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,7 @@ namespace RestaurantAPI.Services
         public int Create(int restaurantId, CreateDishDto dto);
 
         public DishDto GetById(int restaurantId, int dishId);
-        public List<DishDto> GetAll(int restaurantId);
+        public PagedResult<DishDto> GetAll(int restaurantId, DishQuery query);
 
         public void Delete(int restaurantId, int dishId);
 
@@ -79,8 +80,9 @@ namespace RestaurantAPI.Services
 
         }
 
-        public List<DishDto> GetAll(int restaurantId)
+        public PagedResult<DishDto> GetAll(int restaurantId, DishQuery query)
         {
+
             var restaurant = _context.Restaurants
                 .Include(d => d.Dishes)
                 .FirstOrDefault(r => r.Id == restaurantId);
@@ -88,8 +90,32 @@ namespace RestaurantAPI.Services
             if (restaurant is null)
                 throw new NotFoundExceptions("Restaurant not found");
 
-            var dishDtos = _mapper.Map<List<DishDto>>(restaurant.Dishes);
-            return dishDtos;
+            var baseQuery = restaurant.Dishes.Where(d => query.SearchPhrase == null ||
+                                                         (d.Name.ToLower().Contains(query.SearchPhrase.ToLower()) ||
+                                                          d.Price.ToString().Contains(query.SearchPhrase)));
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Dish, object>>>()
+                {
+                    { nameof(Dish.Name), d => d.Name },
+                    { nameof(Dish.Price), d => d.Price }
+
+                };
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC
+                    ? baseQuery.OrderBy(d => d.Name)
+                    : baseQuery.OrderByDescending(d => d.Price);
+            }
+
+            var dish = baseQuery.Skip(query.PageSize * (query.PageNumber - 1)).Take(query.PageSize).ToList();
+            var totalItemsCount = baseQuery.Count();
+
+            var dishDtos = _mapper.Map<List<DishDto>>(dish);
+            var result = new PagedResult<DishDto>(dishDtos, totalItemsCount, query.PageSize, query.PageNumber);
+
+            return result;
         }
 
 
