@@ -8,7 +8,11 @@ namespace RestaurantAPI.Entities
 {
     public class RestaurantDbContext: DbContext
     {
-        private string _connectionString = "Server =(localdb)\\mssqllocaldb;DataBase=RestaurantDb;Trusted_Connection=True;";
+        public RestaurantDbContext(DbContextOptions<RestaurantDbContext> options): base(options)
+        {
+            
+        }
+
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Dish> Dishes { get; set; }
@@ -28,9 +32,5 @@ namespace RestaurantAPI.Entities
 
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_connectionString);
-        }
     }
 }
