@@ -46,7 +46,7 @@ namespace RestaurantAPI
             services.AddSingleton(authenticationSettings);
             services.AddAuthentication(option =>
             {
-                option.DefaultAuthenticateScheme = "Bearer"
+                option.DefaultAuthenticateScheme = "Bearer";
                 option.DefaultScheme = "Bearer";
                 option.DefaultChallengeScheme = "Bearer";
             }).AddJwtBearer(cfg =>
