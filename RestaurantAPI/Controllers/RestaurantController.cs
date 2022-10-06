@@ -48,7 +48,7 @@ namespace RestaurantAPI.Controllers
             return NotFound();
         }
         [HttpGet]
-        [AllowAnonymous]
+       
         public ActionResult<IEnumerable<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
         {
             var restaurantsDtos = _restaurantService.GetAll(query);
