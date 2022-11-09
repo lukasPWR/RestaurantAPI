@@ -17,8 +17,8 @@ namespace RestaurantAPI.Services
 {
     public interface IAccountService
     {
-        public void RegisterUser(RegisterUserDto dto);
-        public string GenerateJwt(LoginDto dto);
+        public Task RegisterUser(RegisterUserDto dto);
+        public Task<string> GenerateJwt(LoginDto dto);
     }
     public class AccountService :IAccountService
     {
@@ -32,7 +32,7 @@ namespace RestaurantAPI.Services
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
         }
-        public void RegisterUser(RegisterUserDto dto)
+        public async Task RegisterUser(RegisterUserDto dto)
         {
             var newUser = new User()
             {
@@ -48,7 +48,7 @@ namespace RestaurantAPI.Services
             _context.SaveChanges();
         }
 
-        public string GenerateJwt(LoginDto dto)
+        public async Task<string> GenerateJwt(LoginDto dto)
         {
             var user = _context.Users
                 .Include( u => u.Role )

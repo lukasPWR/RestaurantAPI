@@ -17,12 +17,12 @@ namespace RestaurantAPI.Services
 {
     public interface IRestaurantService
     {
-        public RestaurantDto GetById(int id);
-        public PagedResult<RestaurantDto> GetAll(RestaurantQuery query);
-        public int Create(CreateRestaurantDto dto);
-        public void Delete(int id);
-        public void DeleteOnName(string name);
-        public void Update(UpdateRestaurantDto dto, int id);
+        public  Task<RestaurantDto> GetById(int id);
+        public Task<PagedResult<RestaurantDto>> GetAll(RestaurantQuery query);
+        public Task<int> Create(CreateRestaurantDto dto);
+        public Task Delete(int id);
+        public Task DeleteOnName(string name);
+        public Task Update(UpdateRestaurantDto dto, int id);
 
 
 
@@ -45,7 +45,7 @@ namespace RestaurantAPI.Services
             _userContextService = userContextService;
         }
 
-        public void Update(UpdateRestaurantDto dto, int id)
+        public async Task Update(UpdateRestaurantDto dto, int id)
         {
 
             var restaurant = _dbContext.Restaurants.FirstOrDefault(r => r.Id == id);
@@ -70,7 +70,7 @@ namespace RestaurantAPI.Services
             
         }
 
-        public void  Delete(int id)
+        public async Task  Delete(int id)
         {
             _logger.LogError($"Restaurant with id {id} DELETE action invoked");
             var restaurant = _dbContext.Restaurants.FirstOrDefault(r => r.Id == id);
@@ -92,7 +92,7 @@ namespace RestaurantAPI.Services
             
         }
 
-        public void DeleteOnName(string name)
+        public async Task DeleteOnName(string name)
         {
             var restaurant = _dbContext.Restaurants.FirstOrDefault(r => r.Name == name);
 
@@ -102,9 +102,9 @@ namespace RestaurantAPI.Services
             _dbContext.Restaurants.Remove(restaurant);
             _dbContext.SaveChanges();
         }
-        public RestaurantDto GetById(int id)
+        public async Task<RestaurantDto> GetById(int id)
         {
-            var restaurant = _dbContext.Restaurants.Include(r => r.Address)
+            var restaurant =  _dbContext.Restaurants.Include(r => r.Address)
                 .Include(r => r.Dishes)
                 .FirstOrDefault(r => r.Id == id);
 
@@ -115,7 +115,7 @@ namespace RestaurantAPI.Services
             return result;
         }
 
-        public PagedResult<RestaurantDto> GetAll(RestaurantQuery query)
+        public async Task<PagedResult<RestaurantDto>> GetAll(RestaurantQuery query)
         {
             var baseQuery = _dbContext
                 .Restaurants
@@ -157,7 +157,7 @@ namespace RestaurantAPI.Services
             return result;
         }
 
-        public int Create(CreateRestaurantDto dto)
+        public async Task<int> Create(CreateRestaurantDto dto)
         {
             var restaurant = _mapper.Map<Restaurant>(dto);
             restaurant.CreatedById = _userContextService.GetUserId;
