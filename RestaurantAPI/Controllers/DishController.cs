@@ -11,7 +11,7 @@ namespace RestaurantAPI.Controllers
 {
     [Route("api/restaurant/{restaurantId}/dish")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class DishController : ControllerBase
     {
         private readonly IDishService _dishService;
@@ -20,9 +20,9 @@ namespace RestaurantAPI.Controllers
             _dishService = dishService;
         }
         [HttpPost]
-        public ActionResult Post([FromRoute] int restaurantId, [FromBody] CreateDishDto dto)
+        public async Task<ActionResult> Post([FromRoute] int restaurantId, [FromBody] CreateDishDto dto)
         {
-           var newDishId = _dishService.Create(restaurantId, dto);
+           var newDishId =  await _dishService.Create(restaurantId, dto);
 
            return Created($"api/restaurant/{restaurantId}/dish/{newDishId}", null);
            
@@ -30,23 +30,23 @@ namespace RestaurantAPI.Controllers
 
         [HttpDelete("{dishId}")]
 
-        public ActionResult Delete([FromRoute] int restaurantId, [FromRoute] int dishId)
+        public async  Task<ActionResult> Delete([FromRoute] int restaurantId, [FromRoute] int dishId)
         {
-            _dishService.Delete(restaurantId, dishId);
+            await _dishService.Delete(restaurantId, dishId);
             return NoContent();
         }
 
         [HttpGet]
-        public ActionResult<List<DishDto>> GetAll([FromRoute] int restaurantId, [FromQuery] DishQuery query)
+        public async Task<ActionResult<List<DishDto>>> GetAll([FromRoute] int restaurantId, [FromQuery] DishQuery query)
         {
-            var dishes = _dishService.GetAll(restaurantId, query);
+            var dishes =  await _dishService.GetAll(restaurantId, query);
             return Ok(dishes);
         }
 
         [HttpGet("{dishId}")]
-        public ActionResult<DishDto> GetById([FromRoute] int restaurantId, [FromRoute] int dishId)
+        public async Task<ActionResult<DishDto>> GetById([FromRoute] int restaurantId, [FromRoute] int dishId)
         {
-            var dish = _dishService.GetById(restaurantId, dishId);
+            var dish = await _dishService.GetById(restaurantId, dishId);
             return Ok(dish);
         }
     }

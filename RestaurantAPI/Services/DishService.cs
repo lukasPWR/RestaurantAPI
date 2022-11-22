@@ -15,12 +15,12 @@ namespace RestaurantAPI.Services
 {
     public interface IDishService
     {
-        public int Create(int restaurantId, CreateDishDto dto);
+        public Task<int> Create(int restaurantId, CreateDishDto dto);
 
-        public DishDto GetById(int restaurantId, int dishId);
-        public PagedResult<DishDto> GetAll(int restaurantId, DishQuery query);
+        public  Task<DishDto> GetById(int restaurantId, int dishId);
+        public Task<PagedResult<DishDto>> GetAll(int restaurantId, DishQuery query);
 
-        public void Delete(int restaurantId, int dishId);
+        public Task Delete(int restaurantId, int dishId);
 
 
     }
@@ -38,9 +38,9 @@ namespace RestaurantAPI.Services
             _userContextService = userContextService;
         }
 
-        public DishDto GetById(int restaurantId, int dishId)
+        public async Task<DishDto> GetById(int restaurantId, int dishId)
         {
-            var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == restaurantId);
+            var restaurant =  _context.Restaurants.FirstOrDefault(r => r.Id == restaurantId);
             if (restaurant is null)
                 throw new NotFoundExceptions("Restaurant not found");
 
@@ -54,7 +54,7 @@ namespace RestaurantAPI.Services
             return dishDto;
         }
 
-        public void Delete(int restaurantId, int dishId)
+        public async Task Delete(int restaurantId, int dishId)
         {
             var restaurant = _context.Restaurants.Include(d => d.Dishes).FirstOrDefault(r => r.Id == restaurantId);
 
@@ -80,7 +80,7 @@ namespace RestaurantAPI.Services
 
         }
 
-        public PagedResult<DishDto> GetAll(int restaurantId, DishQuery query)
+        public async Task<PagedResult<DishDto>> GetAll(int restaurantId, DishQuery query)
         {
 
             var restaurant = _context.Restaurants
@@ -119,7 +119,7 @@ namespace RestaurantAPI.Services
         }
 
 
-        public int Create(int restaurantId, CreateDishDto dto)
+        public async Task<int> Create(int restaurantId, CreateDishDto dto)
         {
             var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == restaurantId);
             if (restaurant is null)
